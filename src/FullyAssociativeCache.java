@@ -2,7 +2,7 @@ import java.util.HashMap;
 
 public class FullyAssociativeCache implements Cache
 {
-	private int numberOfBlocks;
+	private int numberOfBlocks, blocksUsed;
 	private HashMap<Integer, Integer> content;
 	private String previous = ",";
 	
@@ -15,8 +15,7 @@ public class FullyAssociativeCache implements Cache
 	@Override
 	public void printCache()
 	{
-		// TODO Auto-generated method stub
-		
+		System.out.println(content);
 	}
 	
 	@Override
@@ -24,20 +23,25 @@ public class FullyAssociativeCache implements Cache
 	{
 		if (!content.containsValue(reference))
 		{
-			// No Hit, need to find LRU to replace
-			int posLRU = -1;
-			int valLRU = Integer.MAX_VALUE;
-			for (int o = 0; o < numberOfBlocks; o++)
+			if (blocksUsed == numberOfBlocks)// No Hit, need to find LRU to replace\
 			{
-				int val = previous.lastIndexOf("," + content.get(o) + ",");
-				if (val < valLRU)
+				int posLRU = -1;
+				int valLRU = Integer.MAX_VALUE;
+				for (int o = 0; o < numberOfBlocks; o++)
 				{
-					posLRU = o;
-					valLRU = val;
+					int val = previous.lastIndexOf("," + content.get(o) + ",");
+					if (val < valLRU)
+					{
+						posLRU = o;
+						valLRU = val;
+					}
 				}
+				content.put(posLRU, reference);
+			} else
+			{
+				content.put(blocksUsed++, reference);
 			}
 			
-			content.put(posLRU, reference);
 			previous += reference + ","; // Used in LRU replacement
 			return false;
 		}
